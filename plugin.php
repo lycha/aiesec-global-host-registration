@@ -7,12 +7,14 @@ Author: Krzysztof Jackowski
 Author URI: https://www.linkedin.com/profile/view?id=202008277&trk=nav_responsive_tab_profile_pic
 License: GPL 
 */
-wp_enqueue_script('jquery');
 defined( 'ABSPATH' ) or die( 'Plugin file cannot be accessed directly.' );
 
 // [global-host-form]
 
 function global_host( $atts ) {
+
+    wp_enqueue_script('jquery');
+
     $a = shortcode_atts( array(
         'program' => '',
     ), $atts );
@@ -20,11 +22,34 @@ function global_host( $atts ) {
     echo wp_enqueue_style( 'style-name', plugins_url('style.css', __FILE__ ));
     
     $uniqid = uniqid();
-    $utm_source = $_GET["utm_source"];
-    $utm_medium = $_GET["utm_medium"];
-    $utm_campaign = $_GET["utm_campaign"];
-    $bucket = $_GET["bucket"];
-    $lc = $a['lc'];
+
+    if(isset($_GET['utm_source'])){
+        $utm_source = $_GET["utm_source"];
+    }else{
+        $utm_source = "generic";
+    }
+    if(isset($_GET['utm_medium'])){
+        $utm_medium = $_GET["utm_medium"];
+    }else{
+        $utm_medium = "generic";
+    }
+    if(isset($_GET['utm_campaign'])){
+        $utm_campaign = $_GET["utm_campaign"];
+    }else{
+        $utm_campaign = "generic";
+    }
+    if(isset($_GET['bucket'])){
+        $bucket = $_GET["bucket"];
+    }else{
+        $bucket = "n/d";
+    }
+
+    if(isset($_GET['lc'])){
+        $lc = $_GET["lc"];
+    }else{
+        $lc = "n/d";
+    }
+
     $program = 'gh';
 
     if($bucket==""){
@@ -56,9 +81,9 @@ function global_host( $atts ) {
     $actual_link = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
     $form = str_replace("{website_url}",$actual_link,$form);
 
-    if($_GET["thank_you"]==="true"){
+    if(isset($_GET["thank_you"]) && $_GET["thank_you"]==="true"){
         return "<p>Dziękujemy bardzo za rejestrację. Wkrótce się z Tobą skontaktujemy!</p>";  
-    } elseif ($_GET["error"]!=""){
+    } elseif (isset($_GET["error"]) && $_GET["error"]!=""){
         
         $form = str_replace('<div id="error" class="error"><p></p></div>','<div id="error" class="error"><p>'.$_GET["error"].'</p></div>',$form);
         return $form;    
